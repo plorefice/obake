@@ -302,7 +302,15 @@ impl VersionedItem {
         let ident = self.ident();
         let alias = self.alias().unwrap();
 
-        quote!(#vis type #ident = #alias;)
+        // Propagate the doc comments intended for the VersionedItem to the type alias,
+        // in order to prevent a warning in case a #[warn(missing_docs)] directive is in effect
+        // for a publicly-visible type
+        let docs = self.attrs.attrs().filter(|attr| attr.path.is_ident("doc"));
+
+        quote! {
+            #(#docs)*
+            #vis type #ident = #alias;
+        }
     }
 
     fn expand_variants(&self) -> impl Iterator<Item = syn::Ident> + '_ {
