@@ -418,6 +418,7 @@ impl VersionedItem {
             });
 
         quote! {
+            #[allow(unused_macros)]
             macro_rules! #ident {
                 #(#rules)*
             }
